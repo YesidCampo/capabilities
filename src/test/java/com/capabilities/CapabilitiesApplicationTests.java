@@ -1,9 +1,9 @@
 package com.capabilities;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
 
-@SpringBootTest
+@DataR2dbcTest
 class CapabilitiesApplicationTests {
 
 	@Test
