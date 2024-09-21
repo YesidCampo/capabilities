@@ -10,18 +10,18 @@ import reactor.core.publisher.Mono;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(UserEntityNotFoundException.class)
-    public Mono<ResponseEntity<String>> handleUserEntityNotFoundException(UserEntityNotFoundException ex) {
+    @ExceptionHandler(CapabilityEntityNotFoundException.class)
+    public Mono<ResponseEntity<String>> handleUserEntityNotFoundException(CapabilityEntityNotFoundException ex) {
         return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage()));
     }
 
-    @ExceptionHandler(UserEntityNotCreatedException.class)
-    public Mono<ResponseEntity<String>> handleUserEntityNotCreatedException(UserEntityNotCreatedException ex) {
+    @ExceptionHandler(CapabilityEntityNotCreatedException.class)
+    public Mono<ResponseEntity<String>> handleUserEntityNotCreatedException(CapabilityEntityNotCreatedException ex) {
         return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage()));
     }
 
-    @ExceptionHandler(UserEntityNotUpdatedException.class)
-    public Mono<ResponseEntity<String>> handleUserEntityNotUpdatedException(UserEntityNotUpdatedException ex) {
+    @ExceptionHandler(CapabilityEntityNotUpdatedException.class)
+    public Mono<ResponseEntity<String>> handleUserEntityNotUpdatedException(CapabilityEntityNotUpdatedException ex) {
         return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage()));
     }
 
@@ -30,8 +30,8 @@ public class GlobalExceptionHandler {
         return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage()));
     }
 
-    @ExceptionHandler(InvalidUserException.class)
-    public Mono<ResponseEntity<String>> handleUserEntityNotFoundException(InvalidUserException ex) {
+    @ExceptionHandler(InvalidCapabilityException.class)
+    public Mono<ResponseEntity<String>> handleUserEntityNotFoundException(InvalidCapabilityException ex) {
         return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage()));
     }
 

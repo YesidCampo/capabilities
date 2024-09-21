@@ -1,23 +1,27 @@
 package com.capabilities.domain.models;
 
-public class Capacibility {
+import java.util.List;
+
+public class Capability {
 
     private Long id;
     private String name;
     private String description;
+    private List<Technology> technologies;
 
-    public Capacibility() {
+    public Capability() {
     }
 
-    public Capacibility(String name, String description) {
+    public Capability(String name, String description) {
         this.name = name;
         this.description = description;
     }
 
-    public Capacibility(Long id, String name, String description) {
+    public Capability(Long id, String name, String description, List<Technology> technologies) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.technologies = technologies;
     }
 
     public Long getId() {
@@ -42,6 +46,14 @@ public class Capacibility {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<Technology> getTechnologies() {
+        return technologies;
+    }
+
+    public void setTechnologies(List<Technology> technologies) {
+        this.technologies = technologies;
     }
 
 }
