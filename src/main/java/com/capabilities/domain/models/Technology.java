@@ -9,6 +9,10 @@ public class Technology {
         super();
     }
 
+    public Technology(Long id) {
+        this.id = id;
+    }
+
     public Technology(Long id, String name) {
         this.id = id;
         this.name = name;
@@ -54,7 +58,5 @@ public class Technology {
             return false;
         return true;
     }
-
-    
 
 }
