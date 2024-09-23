@@ -2,6 +2,7 @@ package com.capabilities.infrastruture.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.capabilities.application.services.CapabilityForTechnologyService;
 import com.capabilities.application.services.CapabilityService;
@@ -21,11 +22,12 @@ public class ApplicationConfig {
 
     @Bean
     public CapabilityService capabilityService(CapabilityRepositoryPort capabilityRepositoryPort,
-            CapabilityForTechnologyService capabilityForTechnologyService) {
+            CapabilityForTechnologyService capabilityForTechnologyService, WebClient webClient) {
         return new CapabilityServiceImpl(
                 new CreateCapabilityUseCaseImpl(capabilityRepositoryPort),
                 new RetrieveCapabilityUseCaseImpl(capabilityRepositoryPort),
-                new CapabilityForTechnologyServiceImpl(capabilityForTechnologyService, capabilityForTechnologyService));
+                new CapabilityForTechnologyServiceImpl(capabilityForTechnologyService, capabilityForTechnologyService),
+                webClient);
     }
 
     @Bean
