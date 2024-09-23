@@ -49,19 +49,19 @@ public class CapabilityServiceImpl implements CapabilityService {
             return Mono.error(new InvalidCapabilityException("Debe tener menos de 20 relaciones de tecnologia"));
         }
         return this.createCapabilityUseCase.createCapability(capability)
-                .flatMap(createdCapability -> Flux
-                        .fromStream(capability.getTechnologies().stream().distinct())
-                        .flatMap(technology -> this.capabilityForTechnologyService
-                                .save(new CapabilityForTechnology(createdCapability.getId(),
-                                        technology.getId()))
-                                .switchIfEmpty(Mono
-                                        .error(new Exception("CapabilityForTechnology not created")))
-                                .then(Mono.just(technology)))
-                        .collectList().flatMap(list -> {
-                            createdCapability.setTechnologies(list);
+                .flatMap(createdCapability -> Flux.fromStream(capability.getTechnologies().stream().distinct())
+                        .flatMap(technology -> getTecnologyById(technology.getId())
+                                .flatMap(existingTechnology -> this.capabilityForTechnologyService
+                                        .save(new CapabilityForTechnology(createdCapability.getId(),
+                                                technology.getId()))
+                                        .then(Mono.just(existingTechnology))))
+                        .collectList()
+                        .flatMap(technologiesList -> {
+                            createdCapability.setTechnologies(technologiesList);
                             return Mono.just(createdCapability);
                         }))
                 .switchIfEmpty(Mono.error(new Exception("Capability not created")));
+
     }
 
     @Override
@@ -72,61 +72,28 @@ public class CapabilityServiceImpl implements CapabilityService {
     @Override
     public Flux<Capability> getAllCapability(Pageable pageable, boolean ascendingByName,
             boolean ascendingByTechnologynumber) {
-
-        // getTecnologyById(1L)
-        // .flatMap(technology -> Mono.error(new InvalidCapabilityException("Techonology
-        // repeate!!")))
-        // .subscribe();
-
-        List<Long> lists = new ArrayList<>();
-        lists.add(1L);
-        lists.add(2L);
-
         return this.retrieveCapabilityUseCase.getAllCapability(pageable, ascendingByName, ascendingByTechnologynumber)
-                // .flatMap(capablitiyResult -> {
-                //     this.capabilityForTechnologyService.findByCapabilityId(capablitiyResult.getId())
-                //             .map(CapabilityForTechnology::getTechnologyId)
-                //             .collectList()
-                //             .flatMap(technologiesIds -> {
-                //                 return getTecnologyAllByIds(technologiesIds).collectList().flatMap(techologies -> {
-                //                     capablitiyResult.setTechnologies(techologies);
-                //                     return capablitiyResult;
-                //                 });
-                //             });
-                // })
-
-                // .flatMap(getCapability-> {
-                // this.capabilityForTechnologyService.findByCapabilityId(getCapability.getId())
-                // .collectList()
-                // .flatMap(getCapabilityForTechnology ->
-                // Flux.fromStream(getCapabilityForTechnology)
-                // .flatMap( item -> {
-                // Technology technology = new Technology(item.getTechnologyId());
-                // }
-                // )
-                // )
-                // }
-                // )
+                .flatMap(capabilityResult -> this.capabilityForTechnologyService
+                        .findByCapabilityId(capabilityResult.getId())
+                        .map(CapabilityForTechnology::getTechnologyId)
+                        .collectList()
+                        .flatMap(technologiesIds -> getTecnologyAllByIds(technologiesIds)
+                                .collectList()
+                                .map(technologies -> {
+                                    capabilityResult.setTechnologies(technologies);
+                                    return capabilityResult;
+                                })))
 
                 .sort((cap1, cap2) -> {
                     Comparator<Capability> comparator = Comparator.comparing(Capability::getName);
-
-                    // Ordenamiento por nombre ascendente o descendente
                     if (!ascendingByName) {
                         comparator = comparator.reversed();
                     }
-
-                    // Ordenamiento por número de tecnologías (size)
                     Comparator<Capability> techNumberComparator = Comparator
                             .comparing(cap -> cap.getTechnologies().size());
-
-                    // Si se pide ordenar por tamaño de tecnologías, aplicamos este comparador
                     if (!ascendingByTechnologynumber) {
                         techNumberComparator = techNumberComparator.reversed();
                     }
-
-                    // Combinamos los dos comparadores: primero por nombre, luego por número de
-                    // tecnologías
                     return comparator.thenComparing(techNumberComparator).compare(cap1, cap2);
                 })
                 .skip(pageable.getPageNumber() * pageable.getPageSize())
