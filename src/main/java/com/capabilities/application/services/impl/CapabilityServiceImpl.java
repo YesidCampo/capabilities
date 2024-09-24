@@ -2,13 +2,9 @@ package com.capabilities.application.services.impl;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.ArrayList;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
@@ -98,6 +94,42 @@ public class CapabilityServiceImpl implements CapabilityService {
                 })
                 .skip(pageable.getPageNumber() * pageable.getPageSize())
                 .take(pageable.getPageSize());
+    }
+
+    @Override
+    public Mono<Capability> getCapabilityById(Long id) {
+        return this.retrieveCapabilityUseCase.getCapabilityById(id)
+                .flatMap(capabilityResult -> this.capabilityForTechnologyService
+                        .findByCapabilityId(capabilityResult.getId())
+                        .map(CapabilityForTechnology::getTechnologyId)
+                        .collectList() // Obtenemos los IDs de las tecnologías
+                        .flatMap(technologiesIds -> getTecnologyAllByIds(technologiesIds) // Buscamos las tecnologías
+                                                                                          // por los IDs
+                                .collectList()
+                                .map(technologies -> {
+                                    capabilityResult.setTechnologies(technologies); // Asignamos las tecnologías al
+                                                                                    // Capability
+                                    return capabilityResult; // Retornamos el Capability con las tecnologías asociadas
+                                })))
+                .switchIfEmpty(Mono.error(new Exception("Capability not found")));
+    }
+
+    @Override
+    public Flux<Capability> getCapabilitiesByIds(List<Long> ids) {
+        return this.retrieveCapabilityUseCase.getCapabilitiesByIds(ids)
+                .flatMap(capabilityResult -> this.capabilityForTechnologyService
+                        .findByCapabilityId(capabilityResult.getId())
+                        .map(CapabilityForTechnology::getTechnologyId)
+                        .collectList() // Obtenemos los IDs de las tecnologías
+                        .flatMap(technologiesIds -> getTecnologyAllByIds(technologiesIds) // Buscamos las tecnologías
+                                                                                          // por los IDs
+                                .collectList()
+                                .map(technologies -> {
+                                    capabilityResult.setTechnologies(technologies); // Asignamos las tecnologías al
+                                                                                    // Capability
+                                    return capabilityResult; // Retornamos el Capability con las tecnologías asociadas
+                                })))
+                .switchIfEmpty(Flux.error(new Exception("Capability not found")));
     }
 
     public Mono<Technology> getTecnologyById(Long tecnologyId) {

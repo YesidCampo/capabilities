@@ -1,5 +1,7 @@
 package com.capabilities.infrastruture.repositories;
 
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +36,16 @@ public class CapabilityAdapter implements CapabilityRepositoryPort {
     public Flux<Capability> findAll(Pageable pageable, boolean ascendingByName, boolean ascendingByTechnologynumber) {
         return this.capabilityRepository.findAll()
                 .map(CapabilityMapper::toDomainModel);
+    }
+
+    @Override
+    public Mono<Capability> findById(Long id) {
+       return this.capabilityRepository.findById(id).map(CapabilityMapper::toDomainModel);
+    }
+
+    @Override
+    public Flux<Capability> findAllById(List<Long> ids) {
+       return this.capabilityRepository.findAllById(ids).map(CapabilityMapper::toDomainModel);
     }
 
 }
