@@ -1,5 +1,7 @@
 package com.capabilities.domain.ports.out;
 
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 
 import com.capabilities.domain.models.Capability;
@@ -15,4 +17,7 @@ public interface CapabilityRepositoryPort {
 
     Flux<Capability> findAll(Pageable pageable, boolean ascendingByName, boolean ascendingByTechnologynumber);
 
+    Mono<Capability> findById(Long id);
+
+    Flux<Capability> findAllById(List<Long> ids);
 }
