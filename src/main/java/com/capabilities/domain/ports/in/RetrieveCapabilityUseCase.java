@@ -1,6 +1,6 @@
 package com.capabilities.domain.ports.in;
 
-
+import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 
@@ -13,4 +13,8 @@ public interface RetrieveCapabilityUseCase {
     Mono<Capability> getCapabilityByName(String name);
 
     Flux<Capability> getAllCapability(Pageable pageable, boolean ascendingByName, boolean ascendingByTechnologynumber);
+
+    Mono<Capability> getCapabilityById(Long id);
+
+    Flux<Capability> getCapabilitiesByIds(List<Long> ids);
 }

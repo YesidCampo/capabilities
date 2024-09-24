@@ -1,5 +1,7 @@
 package com.capabilities.application.usercases;
 
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 
 import com.capabilities.domain.models.Capability;
@@ -26,6 +28,16 @@ public class RetrieveCapabilityUseCaseImpl implements RetrieveCapabilityUseCase 
     public Flux<Capability> getAllCapability(Pageable pageable, boolean ascendingByName,
             boolean ascendingByTechnologynumber) {
         return this.capabilityRepositoryPort.findAll(pageable, ascendingByName, ascendingByTechnologynumber);
+    }
+
+    @Override
+    public Mono<Capability> getCapabilityById(Long id) {
+        return this.capabilityRepositoryPort.findById(id);
+    }
+
+    @Override
+    public Flux<Capability> getCapabilitiesByIds(List<Long> ids) {
+        return this.capabilityRepositoryPort.findAllById(ids);
     }
 
 }
